@@ -1,0 +1,11 @@
+1-create an api folder outsdie the project
+2-create a json file in root folder using npm init -y
+3-create index.js and install express 
+to use import express change add "type"='module' in json else use requrie
+// Nodemon is a tool that automatically restarts your Node.js server whenever you make changes to your code.
+ Instead of manually stopping and restarting your server every time you update a file, Nodemon does it for you.
+then change the scripts in package.json 
+"scripts": {
+  "start": "node index.js",
+  "dev": "nodemon index.js"
+}
