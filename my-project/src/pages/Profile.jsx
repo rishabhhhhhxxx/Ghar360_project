@@ -1,53 +1,273 @@
-import React from "react";
-import { useSelector } from "react-redux";
+
+// import React, { useRef, useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import { signInSuccess } from "../redux/user/userSlice"; // adjust path if needed
+
+// export default function Profile() {
+//   const fileRef = useRef(null);
+//   const { currentUser } = useSelector((state) => state.user);
+//   const dispatch = useDispatch();
+
+//   const [image, setImage] = useState(currentUser.avatar);
+//   const [username, setUsername] = useState(currentUser.username);
+//   const [email, setEmail] = useState(currentUser.email);
+//   const [password, setPassword] = useState("");
+//   const [uploading, setUploading] = useState(false);
+
+//   const handleFileChange = async (e) => {
+//     const file = e.target.files[0];
+//     const formData = new FormData();
+//     formData.append("image", file);
+
+//     try {
+//       setUploading(true);
+//       const res = await fetch("http://localhost:3000/api/upload/image", {
+//         method: "POST",
+//         body: formData,
+//       });
+//       const data = await res.json();
+//       setImage(data.url);
+//     } catch (err) {
+//       console.error("Image upload failed", err);
+//       alert("Image upload failed!");
+//     } finally {
+//       setUploading(false);
+//     }
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const res = await fetch(`http://localhost:3000/api/user/update/${currentUser._id}`, {
+//         method: "PUT",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           username,
+//           email,
+//           password,
+//           avatar: image,
+//         }),
+//       });
+
+//       const data = await res.json();
+//       if (res.ok) {
+//         dispatch(signInSuccess(data));
+//         alert("Profile updated successfully");
+//       } else {
+//         alert(data.message || "Update failed");
+//       }
+//     } catch (err) {
+//       console.error("Update failed", err);
+//       alert("Update failed");
+//     }
+//   };
+
+//   return (
+//     <div className="p-3 max-w-lg mx-auto">
+//       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
+//       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+//         <input
+//           type="file"
+//           ref={fileRef}
+//           hidden
+//           accept="image/*"
+//           onChange={handleFileChange}
+//         />
+//         <img
+//           onClick={() => fileRef.current.click()}
+//           src={image || "defaultImagePath.jpg"}
+//           alt="profile"
+//           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
+//         />
+//         {uploading && (
+//           <p className="text-center text-sm text-gray-500">Uploading image...</p>
+//         )}
+//         <input
+//           type="text"
+//           placeholder="username"
+//           value={username}
+//           onChange={(e) => setUsername(e.target.value)}
+//           className="border p-3 rounded-lg"
+//         />
+//         <input
+//           type="text"
+//           placeholder="email"
+//           value={email}
+//           onChange={(e) => setEmail(e.target.value)}
+//           className="border p-3 rounded-lg"
+//         />
+//         <input
+//           type="password"
+//           placeholder="password"
+//           value={password}
+//           onChange={(e) => setPassword(e.target.value)}
+//           className="border p-3 rounded-lg"
+//         />
+//         <button
+//           type="submit"
+//           className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+//         >
+//           Update
+//         </button>
+//       </form>
+//       <div className="flex justify-between mt-5">
+//         <span className="text-red-700 cursor-pointer">Delete account</span>
+//         <span className="text-red-700 cursor-pointer">Sign out</span>
+//       </div>
+//     </div>
+//   );
+// }
+
+import React, { useRef, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  updateUserSuccess,
+  updateUserFailure,
+} from "../redux/user/userSlice";
 
 export default function Profile() {
-  const { currentUser } = useSelector((state) => state.user);
+  const fileRef = useRef(null);
+  const dispatch = useDispatch();
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+
+  const [image, setImage] = useState(currentUser.avatar);
+  const [username, setUsername] = useState(currentUser.username);
+  const [email, setEmail] = useState(currentUser.email);
+  const [password, setPassword] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      setUploading(true);
+      const res = await fetch("http://localhost:3000/api/upload/image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setImage(data.url);
+      } else {
+        alert(data.message || "Image upload failed");
+      }
+    } catch (err) {
+      console.error("Image upload failed", err);
+      alert("Image upload failed!");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/user/update/${currentUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            avatar: image,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        dispatch(updateUserSuccess(data));
+        alert("Profile updated successfully");
+      } else {
+        dispatch(updateUserFailure(data.message || "Update failed"));
+        alert(data.message || "Update failed");
+      }
+    } catch (err) {
+      console.error("Update failed", err);
+      dispatch(updateUserFailure("Update failed due to server error"));
+      alert("Update failed");
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
-      <form className="flex flex-col gap-4">
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          type="file"
+          ref={fileRef}
+          hidden
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+
         <img
-          src={currentUser.avatar}
+          onClick={() => fileRef.current.click()}
+          src={
+            image ||
+            "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+          }
           alt="profile"
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
+
+        {uploading && (
+          <p className="text-center text-sm text-gray-500">Uploading image...</p>
+        )}
+
         <input
           type="text"
-          placeholder="username"
-          defaultValue={currentUser.username}
-          id="username"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           className="border p-3 rounded-lg"
         />
         <input
           type="text"
-          placeholder="username"
-          defaultValue={currentUser.email}
-          id="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="border p-3 rounded-lg"
         />
         <input
-          type="text"
-          placeholder="username"
-          defaultValue={currentUser.username}
-          id="password"
+          type="password"
+          placeholder="New Password (optional)"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="border p-3 rounded-lg"
         />
-        <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          Update
-        </button>
-      </form>
-      <div className="flex justify-between mt-5">
-        <span
-          
-          className="text-red-700 cursor-pointer"
+
+        <button
+          type="submit"
+          className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+          disabled={uploading || loading}
         >
-          Delete account
-        </span>
-        <span  className="text-red-700 cursor-pointer">
-          Sign out
-        </span>
+          {loading ? "Updating..." : "Update"}
+        </button>
+
+        {error && (
+          <p className="text-center text-red-500 text-sm mt-2">{error}</p>
+        )}
+      </form>
+
+      <div className="flex justify-between mt-5">
+        <span className="text-red-700 cursor-pointer">Delete account</span>
+        <span className="text-red-700 cursor-pointer">Sign out</span>
       </div>
     </div>
   );
 }
+
