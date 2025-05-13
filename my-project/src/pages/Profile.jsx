@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateUserSuccess,
@@ -177,6 +178,13 @@ export default function Profile() {
         {error && (
           <p className="text-center text-red-500 text-sm mt-2">{error}</p>
         )}
+
+        <Link
+          className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
+          to={"/create-listing"}
+        >
+          Create Listing
+        </Link>
       </form>
 
       <div className="flex justify-between mt-5">
