@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -46,24 +48,43 @@ export default function CreateListing() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (imageUrls.length < 1) return alert("Please upload at least one image");
+    try {
+      if (imageUrls.length < 1)
+        return alert("Please upload at least one image");
+      if (formData.regularPrice < formData.discountPrice){
+        return alert("Discount must be lower than regular price");
+      }
+        
+      setLoading(true);
+      setError(false);
+      const res = await fetch("http://localhost:3000/api/listings/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          imageUrls,
+          userRef: currentUser._id,
+        }),
+      });
 
-    const res = await fetch("http://localhost:3000/api/listings/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...formData, imageUrls, userRef: currentUser._id }),
-    });
+      const data = await res.json();
+      if (!res.ok) return alert(data.message || "Failed to create listing");
 
-    const data = await res.json();
-    if (!res.ok) return alert(data.message || "Failed to create listing");
-
-    alert("Listing created successfully");
-    navigate("/");
+      alert("Listing created successfully");
+      navigate("/");
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
   };
+
+  console.log(formData);
 
   return (
     <main className="p-3 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-semibold text-center my-7">Create a Listing</h1>
+      <h1 className="text-3xl font-semibold text-center my-7">
+        Create a Listing
+      </h1>
       <form className="flex flex-col sm:flex-row gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 flex-1">
           <input
@@ -78,7 +99,9 @@ export default function CreateListing() {
             placeholder="Description"
             className="border p-3 rounded-lg"
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             required
           />
           <input
@@ -86,7 +109,9 @@ export default function CreateListing() {
             placeholder="Address"
             className="border p-3 rounded-lg"
             value={formData.address}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, address: e.target.value })
+            }
             required
           />
           <div className="flex gap-6 flex-wrap">
@@ -96,7 +121,9 @@ export default function CreateListing() {
                 name="type"
                 value="sell"
                 checked={formData.type === "sell"}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value })
+                }
               />
               Sell
             </label>
@@ -106,7 +133,9 @@ export default function CreateListing() {
                 name="type"
                 value="rent"
                 checked={formData.type === "rent"}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value })
+                }
               />
               Rent
             </label>
@@ -114,7 +143,9 @@ export default function CreateListing() {
               <input
                 type="checkbox"
                 checked={formData.parking}
-                onChange={(e) => setFormData({ ...formData, parking: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, parking: e.target.checked })
+                }
               />
               Parking spot
             </label>
@@ -122,7 +153,9 @@ export default function CreateListing() {
               <input
                 type="checkbox"
                 checked={formData.furnished}
-                onChange={(e) => setFormData({ ...formData, furnished: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, furnished: e.target.checked })
+                }
               />
               Furnished
             </label>
@@ -130,7 +163,9 @@ export default function CreateListing() {
               <input
                 type="checkbox"
                 checked={formData.offer}
-                onChange={(e) => setFormData({ ...formData, offer: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, offer: e.target.checked })
+                }
               />
               Offer
             </label>
@@ -141,7 +176,9 @@ export default function CreateListing() {
                 type="number"
                 className="p-3 border border-gray-300 rounded-lg"
                 value={formData.bedrooms}
-                onChange={(e) => setFormData({ ...formData, bedrooms: +e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, bedrooms: +e.target.value })
+                }
               />
               <p>Beds</p>
             </div>
@@ -150,7 +187,9 @@ export default function CreateListing() {
                 type="number"
                 className="p-3 border border-gray-300 rounded-lg"
                 value={formData.bathrooms}
-                onChange={(e) => setFormData({ ...formData, bathrooms: +e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, bathrooms: +e.target.value })
+                }
               />
               <p>Baths</p>
             </div>
@@ -159,7 +198,9 @@ export default function CreateListing() {
                 type="number"
                 className="p-3 border border-gray-300 rounded-lg"
                 value={formData.regularPrice}
-                onChange={(e) => setFormData({ ...formData, regularPrice: +e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, regularPrice: +e.target.value })
+                }
               />
               <div className="flex flex-col items-center">
                 <p>Regular price</p>
@@ -171,7 +212,9 @@ export default function CreateListing() {
                 type="number"
                 className="p-3 border border-gray-300 rounded-lg"
                 value={formData.discountPrice}
-                onChange={(e) => setFormData({ ...formData, discountPrice: +e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, discountPrice: +e.target.value })
+                }
               />
               <div className="flex flex-col items-center">
                 <p>Discounted price</p>
@@ -243,7 +286,7 @@ export default function CreateListing() {
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95"
             disabled={uploading}
           >
-            Create listing
+            {loading ? "Creating..." : "Create Listing"}
           </button>
         </div>
       </form>
