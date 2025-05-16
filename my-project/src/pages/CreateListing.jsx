@@ -71,7 +71,7 @@ export default function CreateListing() {
       if (!res.ok) return alert(data.message || "Failed to create listing");
 
       alert("Listing created successfully");
-      navigate(`/listing/${data._id}`);
+      navigate(`/listings/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
