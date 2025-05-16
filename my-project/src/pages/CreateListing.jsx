@@ -51,10 +51,10 @@ export default function CreateListing() {
     try {
       if (imageUrls.length < 1)
         return alert("Please upload at least one image");
-      if (formData.regularPrice < formData.discountPrice){
+      if (formData.regularPrice < formData.discountPrice) {
         return alert("Discount must be lower than regular price");
       }
-        
+
       setLoading(true);
       setError(false);
       const res = await fetch("http://localhost:3000/api/listings/create", {
@@ -71,7 +71,7 @@ export default function CreateListing() {
       if (!res.ok) return alert(data.message || "Failed to create listing");
 
       alert("Listing created successfully");
-      navigate("/");
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -207,20 +207,23 @@ export default function CreateListing() {
                 <span className="text-xs">($ / month)</span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                className="p-3 border border-gray-300 rounded-lg"
-                value={formData.discountPrice}
-                onChange={(e) =>
-                  setFormData({ ...formData, discountPrice: +e.target.value })
-                }
-              />
-              <div className="flex flex-col items-center">
-                <p>Discounted price</p>
-                <span className="text-xs">($ / month)</span>
+            {formData.offer && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  className="p-3 border border-gray-300 rounded-lg"
+                  value={formData.discountPrice}
+                  onChange={(e) =>
+                    setFormData({ ...formData, discountPrice: +e.target.value })
+                  }
+                  min="0"
+                />
+                <div className="flex flex-col items-center">
+                  <p>Discounted price</p>
+                  <span className="text-xs">($ / month)</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
