@@ -8,7 +8,7 @@ import uploadRouter from './routes/upload.route.js';
 import listingRouter from './routes/listing.route.js';
 import cookieParser from 'cookie-parser';
 dotenv.config() ;
-console.log("Cloudinary ENV:", process.env.CLOUDINARY_CLOUD_NAME, process.env.CLOUDINARY_API_KEY);
+// console.log("Cloudinary ENV:", process.env.CLOUDINARY_CLOUD_NAME, process.env.CLOUDINARY_API_KEY);
 
 
 mongoose.connect(process.env.MONGO).then(()=>{
