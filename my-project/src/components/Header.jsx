@@ -1,16 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Home } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user); // Correct destructuring
 
   return (
     <header className="bg-slate-200 shadow-md p-4">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
+      <div className="max-w-6xl mx-auto flex justify-between items-center py-4 px-4">
         {/* Left - Logo */}
-        <Link to="/">
-          <h1 className="text-2xl font-bold text-gray-800">RealEstate</h1>
+        <Link to="/" className="flex items-center space-x-2 group">
+          <Home className="text-indigo-600 w-8 h-8 group-hover:scale-110 transition-transform duration-200" />
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-800">
+            <span className="text-indigo-600">Ghar</span>
+            <span>360</span>
+          </h1>
         </Link>
 
         {/* Center - Search Bar */}
