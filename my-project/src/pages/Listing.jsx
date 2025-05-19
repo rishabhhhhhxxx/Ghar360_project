@@ -57,16 +57,17 @@ export default function Listing() {
           <Swiper navigation>
             {listing.imageUrls.map((url) => (
               <SwiperSlide key={url}>
-                <div
-                  className="h-[300px] sm:h-[400px] md:h-[450px]"
-                  style={{
-                    background: `url(${url}) center no-repeat`,
-                    backgroundSize: "cover",
-                  }}
-                ></div>
+                <div className="flex justify-center items-center h-[300px] sm:h-[400px] md:h-[450px]">
+                  <img
+                    src={url}
+                    alt="listing"
+                    className="h-full object-contain"
+                  />
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
+
           <div className="fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer">
             <FaShare
               className="text-slate-500"
