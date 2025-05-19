@@ -1,10 +1,29 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { FaSearch } from 'react-icons/fa';
+import { Link , useNavigate} from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Home } from "lucide-react";
+import { useEffect, useState } from 'react';
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user); // Correct destructuring
+  const navigate=useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('searchTerm', searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search]);
 
   return (
     <header className="bg-slate-200 shadow-md p-4">
@@ -18,12 +37,21 @@ export default function Header() {
           </h1>
         </Link>
 
-        {/* Center - Search Bar */}
-        <input
-          type="text"
-          placeholder="Search properties..."
-          className="border border-gray-300 p-2 rounded-md w-1/3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+        <form
+          onSubmit={handleSubmit}
+          className='bg-slate-100 p-3 rounded-lg flex items-center'
+        >
+          <input
+            type='text'
+            placeholder='Search...'
+            className='bg-transparent focus:outline-none w-24 sm:w-64'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button>
+            <FaSearch className='text-slate-600' />
+          </button>
+        </form>
 
         {/* Right - Navigation Links */}
         <nav className="flex space-x-6 items-center">
