@@ -33,10 +33,10 @@ app.use('/api/auth',authRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/listings',listingRouter);
 
-app.use(express.static(path.join(__dirname, '/client/dist')));
+app.use(express.static(path.join(__dirname, '/my-project/dist')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'my-project', 'dist', 'index.html'));
 })
 
 app.use((err,req,res,next)=>{
