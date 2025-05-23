@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node api/index.js",
-    "dev": "nodemon api/index.js"
+    "dev": "nodemon api/index.js",
+    "build":"npm install && npm install --prefix my-project && npm run build --prefix my-project"
   },
   "keywords": [],
   "author": "",
