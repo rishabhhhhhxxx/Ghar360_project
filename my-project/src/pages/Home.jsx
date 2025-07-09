@@ -134,7 +134,7 @@ export default function Home() {
                 Recent Places for Sale
               </h3>
               <Link
-                to={'/search?type=sale'}
+                to={'/search?type=sell'}
                 className="text-blue-700 text-sm font-semibold hover:underline"
               >
                 Show more places for sale
